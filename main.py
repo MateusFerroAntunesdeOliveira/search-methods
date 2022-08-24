@@ -42,18 +42,20 @@ def findStates(matriz, m, n, posicao_atual):
     # Move Right
     if j + 1 < n and matriz[i][j+1] != crystal:
         estados_sucessores.append((i, j+1))
-    # Move to TopLeft
-    if j > 0 and i > 0 and matriz[i-1][j-1] != crystal:
-        estados_sucessores.append((i-1, j-1))
-    # Move to BottomLeft
-    if j > 0 and i + 1 < m and matriz[i+1][j-1] != crystal:
-        estados_sucessores.append((i+1, j-1))
-    # Move to TopRight
-    if j + 1 < n and i > 0 and matriz[i-1][j+1] != crystal:
-        estados_sucessores.append((i-1, j+1))
-    # Move to BottomRight
-    if j + 1 < n and i + 1 < m and matriz[i+1][j+1] != crystal:
-        estados_sucessores.append((i+1, j+1))
+        
+    # -> Code below is to go through the path on the diagonals - uncomment if necessary
+    # # Move to TopLeft
+    # if j > 0 and i > 0 and matriz[i-1][j-1] != crystal:
+    #     estados_sucessores.append((i-1, j-1))
+    # # Move to BottomLeft
+    # if j > 0 and i + 1 < m and matriz[i+1][j-1] != crystal:
+    #     estados_sucessores.append((i+1, j-1))
+    # # Move to TopRight
+    # if j + 1 < n and i > 0 and matriz[i-1][j+1] != crystal:
+    #     estados_sucessores.append((i-1, j+1))
+    # # Move to BottomRight
+    # if j + 1 < n and i + 1 < m and matriz[i+1][j+1] != crystal:
+    #     estados_sucessores.append((i+1, j+1))
     return estados_sucessores
 
 
@@ -112,14 +114,20 @@ def showValues(franja, heuristica):
 def showSolution(estado, predecessores, iteracao):
 	caminho = []
 	caminho.append(estado)
-	print("Solução encontrada após percorrer " + str(iteracao) + " posições ("+str(iteracao)+"º iteração):")
+	print("Solução encontrada na "+str(iteracao)+"º iteração:")
 	while predecessores[estado] != None:
 		caminho.append(predecessores[estado])
 		estado = predecessores[estado]
 	caminho = caminho[::-1]
-	# -> FIXME necessita atenção... Caminho não ta correto (eu acho)
-	print(caminho)
+	passos = len(caminho)-1
+	posicaoDest	= caminho[passos]
+	posicaoInic = caminho[0]
 
+	print("\nO caminho mais rápido encontrado custa " + str(passos) + " passos")
+	print("O primeiro destino encontrado foi: " + str(posicaoDest))
+	print("O caminho todo, a partir da posição inicial do Duende (" + str(posicaoInic) + ") é:")
+	print("Caminho: " + str(caminho) + "\n")
+ 
 
 # Defines a set of actions to reach one of the final states.
 def breadthFirstSearch(matriz, m, n, estado_inicial, estados_finais):
