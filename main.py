@@ -3,9 +3,15 @@ import sys
 import csv
 from math import sqrt, pow
 
+# -> Values to the matrix:
+# -> 0 = EXIT
+# -> 1 = Possible Path
+# -> 2 = Crystals
+# -> 3 = Initial Point
+
 # Given a Matrix and a value, find the coords (i,j).
 def findPosition(matriz, m, n, valor):
-    # Empty List posicoes
+    # Empty List 'posicoes'
     posicoes = []
     
     for i in range(0, m):
@@ -22,45 +28,33 @@ def findStates(matriz, m, n, posicao_atual):
     i = posicao_atual[0]
     j = posicao_atual[1]
     estados_sucessores = []
+    crystal = "2"
     
     # Move UP
-    if i > 0 and matriz[i-1][j] != "2":
+    if i > 0 and matriz[i-1][j] != crystal:
         estados_sucessores.append((i-1, j))
     # Move Down
-    if i+1 < m and matriz[i+1][j] != "2":
+    if i + 1 < m and matriz[i+1][j] != crystal:
         estados_sucessores.append((i+1, j))
 	# Move Left
-    if j > 0 and matriz[i][j-1] != "2":
+    if j > 0 and matriz[i][j-1] != crystal:
         estados_sucessores.append((i, j-1))
     # Move Right
-    if j+1 < n and matriz[i][j+1] != "2":
+    if j + 1 < n and matriz[i][j+1] != crystal:
         estados_sucessores.append((i, j+1))
     # Move to TopLeft
-    if j > 0 and i > 0 and matriz[i-1][j-1] != "2":
+    if j > 0 and i > 0 and matriz[i-1][j-1] != crystal:
         estados_sucessores.append((i-1, j-1))
     # Move to BottomLeft
-    if j > 0 and i+1 < m and matriz[i+1][j-1] != "2":
+    if j > 0 and i + 1 < m and matriz[i+1][j-1] != crystal:
         estados_sucessores.append((i+1, j-1))
     # Move to TopRight
-    if j+1 < n and i > 0 and matriz[i-1][j+1] != "2":
+    if j + 1 < n and i > 0 and matriz[i-1][j+1] != crystal:
         estados_sucessores.append((i-1, j+1))
     # Move to BottomRight
-    if j+1 < n and i+1 < m and matriz[i+1][j+1] != "2":
+    if j + 1 < n and i + 1 < m and matriz[i+1][j+1] != crystal:
         estados_sucessores.append((i+1, j+1))
     return estados_sucessores
-
-
-# Shows in which iteration the solution was found and how to start from the initial state 
-# and reach the final state from the partial solution stored in predecessors.
-def showSolution(estado, predecessores, iteracao):
-	caminho = []
-	caminho.append(estado)
-	print("Solucao encontrada na iteracao " + str(iteracao) + ":")
-	while predecessores[estado] != None:
-		caminho.append(predecessores[estado])
-		estado = predecessores[estado]
-	caminho = caminho[::-1]
-	print(caminho)
 
 
 # Given any state and a set of end states, calculate the distance from any state to the nearest end state.
@@ -114,7 +108,53 @@ def showValues(franja, heuristica):
 	print("===================================")
 
 
-# TODO - Impelements Breadth-First Search
+# Shows in which iteration the solution was found and how to start from the initial state and reach the final state (solution stored in predecessors)
+def showSolution(estado, predecessores, iteracao):
+	caminho = []
+	caminho.append(estado)
+	print("Solução encontrada após percorrer " + str(iteracao) + " posições ("+str(iteracao)+"º iteração):")
+	while predecessores[estado] != None:
+		caminho.append(predecessores[estado])
+		estado = predecessores[estado]
+	caminho = caminho[::-1]
+	# -> FIXME necessita atenção... Caminho não ta correto (eu acho)
+	print(caminho)
+
+
+# Defines a set of actions to reach one of the final states.
+def breadthFirstSearch(matriz, m, n, estado_inicial, estados_finais):
+	estados_visitados = []
+	estados_expandidos = []
+	profundidade_estados = {}
+	predecessores = {}
+	solucao_encontrada = False
+	print("=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+	print("Algoritmo: Busca em Largura")
+	estados_visitados.append(estado_inicial)
+	profundidade_estados[estado_inicial] = 0
+	predecessores[estado_inicial] = None
+	iteracao = 1
+ 
+	while len(estados_visitados) != 0:
+		# mostra_estados_fila (estados_visitados) -> Shows the algorithm queue at each iteration
+		estado = estados_visitados.pop(0)
+		if estado in estados_finais:
+			solucao_encontrada = True
+			break
+		estados_sucessores = findStates(matriz, m, n, estado)
+		estados_expandidos.append(estado)
+		for i in range (0, len(estados_sucessores)):
+			sucessor = estados_sucessores[i]
+			if sucessor not in estados_expandidos and sucessor not in estados_visitados:
+				estados_visitados.append(estados_sucessores[i])
+				profundidade_estados[estados_sucessores[i]] = profundidade_estados[estado] + 1
+				predecessores[estados_sucessores[i]] = estado
+		iteracao = iteracao + 1
+
+	if solucao_encontrada == True:
+		showSolution(estado, predecessores, iteracao)
+	else:
+		print("Could not find a solution to the problem!")
 
 
 # TODO - Implements A*
@@ -123,19 +163,26 @@ def showValues(franja, heuristica):
 # Main flow - Use python main.py content/duende.csv
 if len(sys.argv) == 2:
 	problema = open(sys.argv[1])
-	leitor_problema = csv.reader (problema)
+	leitor_problema = csv.reader(problema)
 	entrada = list(leitor_problema)
 	m = int(entrada[0][0]) # Row number
 	n = int(entrada[0][1]) # Column number
 	matriz = entrada[1:] # Map
-
 	estado_inicial = findPosition(matriz, m, n, "3")
 	estados_finais = findPosition(matriz, m, n, "0")
-	print ("Matriz (mapa): ")
-	print (str(matriz))
-	print ("Estado Inicial: " + str(estado_inicial))
-	print ("Estado Final: " + str(estados_finais))
+
+	print("\n")
+	print("+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+")
+	print("Mapa atual a partir do arquivo: " + sys.argv[1])
+	for i in range(0, len(matriz)):
+		print(matriz[i])
+	print("+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+")
+ 
+	print("\nPosição Inicial do Duende: " + str(estado_inicial))
+	print("Posições das saídas para o Duende: " + str(estados_finais) + "\n")
  
 	# TODO - Call the functions
+	breadthFirstSearch(matriz, m, n, estado_inicial[0], estados_finais)
+
 else:
     print("Provides a CSV file for the search algorithms")

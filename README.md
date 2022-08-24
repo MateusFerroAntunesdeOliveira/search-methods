@@ -9,11 +9,15 @@
 
 ----------------------
 ### Como utilizar:
-Rode:
+Rode, na respectiva pasta do projeto (onde está o arquivo 'main.py'):
 
 ```
-  TESTE
+  python main.py content/duende.csv
 ```
+
+<p align="justify">
+<b> Observação importante:</b> Deve haver uma pasta 'content' com um arquivo chamado duende.csv para o programa conseguir interpretar o mapa do problema
+</p>
 
 ----------------------
 ### Descrição:
