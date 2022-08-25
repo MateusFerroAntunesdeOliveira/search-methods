@@ -13,7 +13,6 @@ from math import sqrt, pow
 def findPosition(matriz, m, n, valor):
     # Empty List 'posicoes'
     posicoes = []
-    
     for i in range(0, m):
         for j in range(0, n):
             if matriz[i][j] == valor:
@@ -28,6 +27,7 @@ def findStates(matriz, m, n, posicao_atual):
     i = posicao_atual[0]
     j = posicao_atual[1]
     estados_sucessores = []
+    # Defining crystal as "2"
     crystal = "2"
     
     # Move UP
@@ -63,27 +63,28 @@ def findStates(matriz, m, n, posicao_atual):
 def targetDistance(estado, estados_finais):
 	x = estado[0]
 	y = estado[1]
-	distancia_minima = 1000000000
+	distancia_minima = 99999999
 
 	for estado_final in estados_finais:
-		x_estado_final = estado_final[0]
-		y_estado_final = estado_final[1]
-		diff1 = x_estado_final - x
-		diff2 = y_estado_final - y
-		somaDiffs = pow(diff1, 2) + pow(diff2, 2)
-		distancia_atual = sqrt(somaDiffs)
+		x_final = estado_final[0]
+		y_final = estado_final[1]
+		diff1 = x_final - x
+		diff2 = y_final - y
+		# Calculates the distance between two points
+		distancia_atual = sqrt(pow(diff1, 2) + pow(diff2, 2))
 		if distancia_atual < distancia_minima:
+			# Reassignment in the minimum distance
 			distancia_minima = distancia_atual
 	return distancia_minima
 
 
 # Given a fringe and a heuristic function, finds the state with the lowest value in that fringe.
-def promisingState(franja, heuristica_estados):
-	valor_mais_promissor = 1000000000
+def promisingState(fringe, heuristica_estados):
+	valor_mais_promissor = 99999999
 	estado_mais_promissor = None
 	indice_mais_promissor = 0
 	indice = 0
-	for estado in franja:
+	for estado in fringe:
 		if heuristica_estados[estado] < valor_mais_promissor:
 			estado_mais_promissor = estado
 			valor_mais_promissor = heuristica_estados[estado]
@@ -92,22 +93,13 @@ def promisingState(franja, heuristica_estados):
 	return indice_mais_promissor
 
 
-# Given a queue with some states, shows each one of them.
-def showStates(fila):
-	print("===================================")
-	print("Estados para analisar")
-	for estado in fila:
-		print(str(estado))
-	print("===================================")
-
-
-# Given a fringe with some states, shows the heuristic value of each one of them.
-def showValues(franja, heuristica):
-	print("===================================")
-	print("Valores da franja")
-	for estado in franja:
-		print("V_" + str(estado) + " = " + str(heuristica[estado]))
-	print("===================================")
+# # Given a fringe with some states, shows the heuristic value of each one of them.
+# def showValues(fringe, heuristica):
+# 	print("===================================")
+# 	print("Valores da Fringe:")
+# 	for estado in fringe:
+# 		print("V_" + str(estado) + " = " + str(heuristica[estado]))
+# 	print("===================================")
 
 
 # Shows in which iteration the solution was found and how to start from the initial state and reach the final state (solution stored in predecessors)
@@ -165,7 +157,50 @@ def breadthFirstSearch(matriz, m, n, estado_inicial, estados_finais):
 		print("Could not find a solution to the problem!")
 
 
-# TODO - Implements A*
+def aStar(matriz, m, n, estado_inicial, estados_finais):
+	distancia_meta = {}
+	distancia_percorrida = {}
+	heuristica = {}
+	predecessores = {}
+	estados_expandidos = []
+	fringe = []
+	solucao_encontrada = False
+ 
+	print("=-=-=-=-=-=-=-=-=-=-=-=-=")
+	print("Algoritmo: A* (A Estrela)")
+
+	# Inicializacao de distancia percorrida (f), distancia ate a meta (g) e heuristica (h = f+g).
+	distancia_percorrida[estado_inicial] = 0
+	distancia_meta[estado_inicial] = targetDistance(estado_inicial, estados_finais) 
+	heuristica[estado_inicial] = distancia_percorrida[estado_inicial] + distancia_meta[estado_inicial]
+	predecessores[estado_inicial] = None
+	print("Heuristica da Distancia no Estado Inicial: " + str(heuristica[estado_inicial]))
+	fringe.append(estado_inicial)
+	iteracao = 1
+	while len(fringe) != 0:
+		# showValues(fringe, heuristica)
+		indice_mais_promissor = promisingState(fringe, heuristica)
+		estado = fringe.pop(indice_mais_promissor)
+		if estado in estados_finais:
+			solucao_encontrada = True
+			break
+		estados_sucessores = findStates(matriz, m, n, estado)
+		estados_expandidos.append(estado)
+		for i in range (0, len(estados_sucessores)):	
+			sucessor = estados_sucessores[i]
+			if sucessor not in estados_expandidos and sucessor not in fringe:
+				fringe.append(sucessor)
+				if sucessor not in heuristica.keys():
+					distancia_meta[sucessor] = targetDistance(sucessor, estados_finais)
+					distancia_percorrida[sucessor] = distancia_percorrida[estado] + 1
+					heuristica[sucessor] = distancia_meta[sucessor] + distancia_percorrida[sucessor]
+					predecessores[sucessor] = estado
+		iteracao = iteracao + 1
+
+	if solucao_encontrada == True:
+		showSolution(estado, predecessores, iteracao)
+	else:
+		print("Could not find a solution to the problem!")
 
 
 # Main flow - Use python main.py content/duende.csv
@@ -189,8 +224,9 @@ if len(sys.argv) == 2:
 	print("\nPosição Inicial do Duende: " + str(estado_inicial))
 	print("Posições das saídas para o Duende: " + str(estados_finais) + "\n")
  
-	# TODO - Call the functions
+	# Calling the functions (BFS and A*)
 	breadthFirstSearch(matriz, m, n, estado_inicial[0], estados_finais)
+	aStar(matriz, m, n, estado_inicial[0], estados_finais)
 
 else:
     print("Provides a CSV file for the search algorithms")
