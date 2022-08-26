@@ -128,8 +128,10 @@ def breadthFirstSearch(matriz, m, n, estado_inicial, estados_finais):
 	profundidade_estados = {}
 	predecessores = {}
 	solucao_encontrada = False
+	
 	print("=-=-=-=-=-=-=-=-=-=-=-=-=-=")
 	print("Algoritmo: Busca em Largura")
+
 	estados_visitados.append(estado_inicial)
 	profundidade_estados[estado_inicial] = 0
 	predecessores[estado_inicial] = None
@@ -153,6 +155,45 @@ def breadthFirstSearch(matriz, m, n, estado_inicial, estados_finais):
 
 	if solucao_encontrada == True:
 		showSolution(estado, predecessores, iteracao)
+	else:
+		print("Could not find a solution to the problem!")
+
+
+# FIXME não ta funcionando. Necessita atenção
+def depthFirstSearch(matriz, m, n, estado_inicial, estados_finais, visitado):
+	estados_visitados = []
+	estados_expandidos = []
+	profundidade_estados = {}
+	predecessores = {}
+	solucao_encontrada = False
+
+	print("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+	print("Algoritmo: Busca em Profundidade")
+	
+	estados_visitados.append(estado_inicial)
+	profundidade_estados[estado_inicial] = 0
+	predecessores[estado_inicial] = None
+	visitado[estado_inicial] = True
+
+	while len(estados_visitados) != 0:
+		# mostra_estados_fila (estados_visitados) -> Shows the algorithm queue at each iteration
+		estado = estados_visitados.pop(0)
+		if estado in estados_finais:
+			solucao_encontrada = True
+			break
+		estados_sucessores = findStates(matriz, m, n, estado)
+		estados_expandidos.append(estado)
+
+		for neighbour in range (0, len(estados_sucessores)):
+			if visitado[neighbour] == False:
+				estados_visitados.append(estados_sucessores[i])
+				profundidade_estados[estados_sucessores[i]] = profundidade_estados[estado] + 1
+				predecessores[estados_sucessores[i]] = estado
+				depthFirstSearch(matriz, m, n, neighbour, estados_finais, visitado)
+		return estados_visitados
+
+	if solucao_encontrada == True:
+		showSolution(estado, predecessores, len(neighbour))
 	else:
 		print("Could not find a solution to the problem!")
 
@@ -227,6 +268,7 @@ if len(sys.argv) == 2:
 	# Calling the functions (BFS and A*)
 	breadthFirstSearch(matriz, m, n, estado_inicial[0], estados_finais)
 	aStar(matriz, m, n, estado_inicial[0], estados_finais)
+	depthFirstSearch(matriz, m, n, estado_inicial[0], estados_finais, visitado = True)
 
 else:
     print("Provides a CSV file for the search algorithms")
