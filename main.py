@@ -30,21 +30,22 @@ def findStates(matriz, m, n, posicao_atual):
     # Defining crystal as "2"
     crystal = "2"
 
-    # Move UP
-    if i > 0 and matriz[i-1][j] != crystal:
-        estados_sucessores.append((i-1, j))
     # Move Down
     if i + 1 < m and matriz[i+1][j] != crystal:
         estados_sucessores.append((i+1, j))
-        # Move Left
-    if j > 0 and matriz[i][j-1] != crystal:
-        estados_sucessores.append((i, j-1))
+    # Move UP
+    if i > 0 and matriz[i-1][j] != crystal:
+        estados_sucessores.append((i-1, j))
     # Move Right
     if j + 1 < n and matriz[i][j+1] != crystal:
         estados_sucessores.append((i, j+1))
+    # Move Left
+    if j > 0 and matriz[i][j-1] != crystal:
+        estados_sucessores.append((i, j-1))
+
 
     # -> Code below is to go through the path on the diagonals - uncomment if necessary
-    # # Move to TopLeft
+    # Move to TopLeft
     # if j > 0 and i > 0 and matriz[i-1][j-1] != crystal:
     #     estados_sucessores.append((i-1, j-1))
     # # Move to BottomLeft
@@ -177,7 +178,7 @@ def depthFirstSearch(matriz, m, n, estado_inicial, estados_finais):
 
 	# Checks if there are still any states to visit
     while len(estados_visitados) != 0:
-        estado = estados_visitados.pop()
+        estado = estados_visitados.pop(-1)
         if estado in estados_finais:
             solucao_encontrada = True
             break

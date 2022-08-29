@@ -4,15 +4,15 @@
 
 #### Implementação: Blind (breadth and depth) and heuristic (with A*) search methods
 ----------------------
-#### @MateusFerroAntunesdeOliveira 
-* Work in Progress - 24/08/2022
+#### @MateusFerroAntunesdeOliveira @ijoaog @GabrielSkf
+* Work Done - 29/08/2022
 
 ----------------------
 ### Como utilizar:
 Rode, na respectiva pasta do projeto (onde está o arquivo 'main.py'):
 
 ```
-  python main.py content/duende.csv
+  python main.py content/duende_2.csv
 ```
 
 <p align="justify">
@@ -58,12 +58,26 @@ Rode, na respectiva pasta do projeto (onde está o arquivo 'main.py'):
 
 ```
   Entrada:
-  4 5
-  0 1 1 1 1
-  0 2 2 2 1
-  2 1 1 1 1
-  1 1 1 3 1
+  4,5
+  0,1,1,1,1
+  0,2,2,2,1
+  2,1,1,1,1
+  1,1,1,3,1
   
   Saída
   8
+```
+ou
+
+```
+  Entrada:
+  8,10
+  1,1,1,1,1,3,2,2,2,2
+  1,2,2,2,2,1,2,2,2,2
+  1,2,2,2,2,1,2,2,2,2
+  1,1,1,2,2,1,1,1,2,2
+  1,2,1,2,2,2,2,1,2,2
+  1,2,1,1,1,1,1,1,2,2
+  1,2,2,2,2,2,2,2,2,2
+  0,2,2,2,2,2,2,2,2,2
 ```
